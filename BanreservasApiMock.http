@@ -1,0 +1,47 @@
+@host = http://localhost:9464
+@usuario = mock-usuario
+@llave = mock-llave
+@token = mock-access-token
+
+### Token válido
+POST {{host}}/api/v1/auth
+Usuario: {{usuario}}
+Llave: {{llave}}
+Content-Type: application/json
+
+{ "id_consumidor": "TuBancoPersonas" }
+
+### Consulta base: 6 cuentas, 1 tarjeta y 11 préstamos
+POST {{host}}/productos/v1/posicionconsolidada
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "id_consumidor": "TuBancoPersonas",
+  "usuario": "test",
+  "terminal": "0.0.0.0",
+  "fechaHora": "2026-09-09 10:11:09",
+  "version": 1,
+  "cliente": { "identificacion": { "numero": "40212546473", "tipo": "Cedula" } }
+}
+
+### Cliente sin productos
+POST {{host}}/productos/v1/posicionconsolidada
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "id_consumidor": "TuBancoPersonas", "usuario": "test", "terminal": "0.0.0.0", "fechaHora": "2026-09-09 10:11:09", "version": 1, "cliente": { "identificacion": { "numero": "00100000000", "tipo": "Cedula" } } }
+
+### Token vencido
+POST {{host}}/productos/v1/posicionconsolidada
+Authorization: Bearer mock-expired-token
+Content-Type: application/json
+
+{ "id_consumidor": "TuBancoPersonas", "usuario": "test", "terminal": "0.0.0.0", "fechaHora": "2026-09-09 10:11:09", "version": 1, "cliente": { "identificacion": { "numero": "40212546473", "tipo": "Cedula" } } }
+
+### Error 500 forzado
+POST {{host}}/productos/v1/posicionconsolidada
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "id_consumidor": "TuBancoPersonas", "usuario": "test", "terminal": "0.0.0.0", "fechaHora": "2026-09-09 10:11:09", "version": 1, "cliente": { "identificacion": { "numero": "00100000500", "tipo": "Cedula" } } }

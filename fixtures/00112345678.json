@@ -1,0 +1,8 @@
+{
+  "id_consumidor": "fixture", "usuario": "fixture", "terminal": "fixture", "fechaHora": "2000-01-01 00:00:00", "TRNID": "000000000000", "version": 1,
+  "cuentas": [{ "producto": { "numeroProducto": "MOCK-ACC-EXT", "tipoProducto": "CuentaAhorro", "moneda": "DOP" }, "alias": "Cuenta extendida", "puntoDeAtencion": "010", "balance": "1000.00", "disponible": "1000.00", "montoAutorizado": "0.00", "saldoEnTransito": "", "puntosGanados": "0", "puntosAcumulados": "0", "estado": "ACTIVA" }],
+  "tarjetas": [], "prestamos": [],
+  "certificados": [{ "producto": { "numeroProducto": "MOCK-CERT-001", "tipoProducto": "Certificado", "moneda": "DOP" }, "alias": "Certificado prueba", "puntoDeAtencion": "010", "montoActual": "5000.00", "tasaVigente": "3.40", "fechaVencimiento": "2031-01-01T00:00:00.000000", "montoInicial": "5000.00", "estado": "ACTIVA", "interesMes": "14.17" }],
+  "tarjetasDebito": [{ "producto": { "numeroProducto": "MOCK-DEBIT-001", "tipoProducto": "TarjetaDebito", "moneda": "DOP" }, "puntoDeAtencion": "010", "token": "MOCK-DEBIT-TOKEN", "fechaEmision": "2030-01-01T00:00:00", "limiteATM": "1000", "limitePOS": "2000", "cuentaDesignada": { "numeroProducto": "MOCK-ACC-EXT", "tipoProducto": "TarjetaDebito", "moneda": "DOP" }, "estado": "NORMAL", "descripcionEstado": "NORMAL" }],
+  "mensaje": "Satisfactorio"
+}
