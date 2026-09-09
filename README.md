@@ -4,6 +4,12 @@ Mock local de los endpoints de autenticación y posición consolidada. No usa cr
 
 ## Ejecutar
 
+### Visual Studio
+
+Abra `BanreservasApiMock.sln`, establezca **BanreservasApiMock** como proyecto de inicio si Visual Studio lo solicita y presione `F5` o el botón de inicio. El perfil predeterminado es `http` y abre el servicio en el puerto 9464.
+
+### Terminal
+
 ```powershell
 dotnet run
 ```

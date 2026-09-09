@@ -23,3 +23,11 @@
 - **Pruebas ejecutadas:** `dotnet build` y `powershell -ExecutionPolicy Bypass -File .\\verify.ps1`.
 - **Resultado:** ambas completaron correctamente; compilación con 0 advertencias y 0 errores. La verificación confirmó Swagger UI, OpenAPI, seguridad Bearer, health check y los escenarios existentes.
 - **Riesgo residual:** ninguno nuevo; la publicación privada sigue bloqueada por la sesión de GitHub descrita arriba.
+
+## MC-20260909-003
+
+- **Objetivo:** ejecutar el mock desde Visual Studio como una Web API .NET convencional.
+- **Estado inicial → final:** pendiente → completado.
+- **Implementado:** solución `BanreservasApiMock.sln` y guía de inicio con `F5`/perfil HTTP.
+- **Prueba ejecutada:** `dotnet build BanreservasApiMock.sln`.
+- **Resultado:** compilación correcta con 0 advertencias y 0 errores.
