@@ -31,3 +31,10 @@
 - **Implementado:** solución `BanreservasApiMock.sln` y guía de inicio con `F5`/perfil HTTP.
 - **Prueba ejecutada:** `dotnet build BanreservasApiMock.sln`.
 - **Resultado:** compilación correcta con 0 advertencias y 0 errores.
+
+## MC-20260909-004
+
+- **Objetivo:** documentar el token ficticio para pruebas desde Swagger.
+- **Estado inicial → final:** pendiente → completado.
+- **Implementado:** instrucción explícita de autorización con `mock-access-token`; Swagger agrega el prefijo Bearer.
+- **Validación:** revisión del contrato Swagger y del valor configurado; no requiere recompilación por ser cambio documental.
