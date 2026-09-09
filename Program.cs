@@ -2,11 +2,40 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Banreservas API Mock",
+        Version = "v1",
+        Description = "Mock local de autenticación y posición consolidada. Use únicamente las credenciales ficticias documentadas."
+    });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Token ficticio: `mock-access-token`.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+    options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", null, null)] = []
+    });
+});
+builder.Services.AddHealthChecks();
 var settings = builder.Configuration.GetRequiredSection("Mock").Get<MockSettings>()
     ?? throw new InvalidOperationException("Falta la configuración Mock.");
 var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Banreservas API Mock v1"));
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
+app.MapHealthChecks("/health").WithTags("Sistema").WithSummary("Estado del mock");
 
 app.MapPost("/api/v1/auth", async (HttpRequest request) =>
 {
@@ -31,8 +60,16 @@ app.MapPost("/api/v1/auth", async (HttpRequest request) =>
         if (token != settings.AccessToken) return Message(StatusCodes.Status401Unauthorized, "Token inválido");
     }
 
-    return Results.Json(new { acceso_token = settings.AccessToken, expiracion_token = "60", mensaje = "Satisfactorio" });
-});
+    return Results.Json(new AuthResponse(settings.AccessToken, "60", "Satisfactorio"));
+})
+.Accepts<AuthRequest>("application/json")
+.Produces<AuthResponse>(StatusCodes.Status200OK)
+.Produces<ApiMessage>(StatusCodes.Status400BadRequest)
+.Produces<ApiMessage>(StatusCodes.Status401Unauthorized)
+.WithTags("Autenticación")
+.WithName("Authenticate")
+.WithSummary("Genera o consulta el token ficticio")
+.WithDescription("Requiere los headers `Usuario: mock-usuario` y `Llave: mock-llave`.");
 
 app.MapPost("/productos/v1/posicionconsolidada", async (HttpRequest request) =>
 {
@@ -76,11 +113,22 @@ app.MapPost("/productos/v1/posicionconsolidada", async (HttpRequest request) =>
     fixture["fechaHora"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
     fixture["TRNID"] = Random.Shared.NextInt64(100_000_000_000, 1_000_000_000_000).ToString(CultureInfo.InvariantCulture);
     return Results.Json(fixture);
-});
+})
+.Accepts<PositionRequest>("application/json")
+.Produces<JsonObject>(StatusCodes.Status200OK, "application/json")
+.Produces<ApiMessage>(StatusCodes.Status400BadRequest)
+.Produces<ApiMessage>(StatusCodes.Status401Unauthorized)
+.Produces<ApiMessage>(StatusCodes.Status404NotFound)
+.Produces<ApiMessage>(StatusCodes.Status500InternalServerError)
+.Produces<ApiMessage>(StatusCodes.Status504GatewayTimeout)
+.WithTags("Productos")
+.WithName("GetConsolidatedPosition")
+.WithSummary("Obtiene la posición consolidada del cliente")
+.WithDescription("Use `Authorization: Bearer mock-access-token`. La identificación selecciona el escenario del fixture.");
 
 app.Run();
 
-static IResult Message(int statusCode, string mensaje) => Results.Json(new { mensaje }, statusCode: statusCode);
+static IResult Message(int statusCode, string mensaje) => Results.Json(new ApiMessage(mensaje), statusCode: statusCode);
 
 static async Task<IResult?> ApplyDelay(HttpRequest request, MockSettings settings)
 {
@@ -124,6 +172,11 @@ sealed class MockSettings
 }
 
 sealed record AuthRequest([property: JsonPropertyName("id_consumidor")] string? IdConsumidor);
+sealed record AuthResponse(
+    [property: JsonPropertyName("acceso_token")] string AccesoToken,
+    [property: JsonPropertyName("expiracion_token")] string ExpiracionToken,
+    [property: JsonPropertyName("mensaje")] string Mensaje);
+sealed record ApiMessage([property: JsonPropertyName("mensaje")] string Mensaje);
 sealed record PositionRequest(
     [property: JsonPropertyName("id_consumidor")] string? IdConsumidor,
     [property: JsonPropertyName("usuario")] string? Usuario,

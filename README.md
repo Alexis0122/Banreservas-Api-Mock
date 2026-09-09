@@ -17,6 +17,14 @@ dotnet run --launch-profile https
 
 Use [BanreservasApiMock.http](BanreservasApiMock.http) o ejecute `./verify.ps1` tras `dotnet build`.
 
+## API y operación
+
+- Swagger UI: `http://localhost:9464/swagger`
+- OpenAPI JSON: `http://localhost:9464/swagger/v1/swagger.json`
+- Health check: `http://localhost:9464/health`
+
+Swagger documenta el token Bearer ficticio. Para `/api/v1/auth`, agregue manualmente los headers `Usuario` y `Llave` indicados abajo.
+
 ## Contrato
 
 `POST /api/v1/auth` requiere los headers `Usuario: mock-usuario` y `Llave: mock-llave`, además de `id_consumidor`. Devuelve siempre `mock-access-token`.

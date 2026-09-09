@@ -21,6 +21,11 @@ try {
 
     $auth = Invoke-RestMethod "$BaseUrl/api/v1/auth" -Method Post -ContentType "application/json" -Headers @{ Usuario = "mock-usuario"; Llave = "mock-llave" } -Body '{"id_consumidor":"check"}'
     Assert-Equal "mock-access-token" $auth.acceso_token "token"
+    Assert-Equal 200 (Status { Invoke-RestMethod "$BaseUrl/health" }) "health check"
+    Assert-Equal 200 (Status { Invoke-RestMethod "$BaseUrl/swagger/index.html" }) "Swagger UI"
+    $openApi = Invoke-RestMethod "$BaseUrl/swagger/v1/swagger.json"
+    if (-not $openApi.paths.'/api/v1/auth' -or -not $openApi.paths.'/productos/v1/posicionconsolidada') { throw "Swagger no documenta los endpoints" }
+    Assert-Equal "http" $openApi.components.securitySchemes.Bearer.type "seguridad OpenAPI"
     $body = '{"id_consumidor":"check","usuario":"tester","terminal":"127.0.0.1","fechaHora":"2026-09-09 10:11:09","version":1,"cliente":{"identificacion":{"numero":"40212546473","tipo":"Cedula"}}}'
     $ok = Invoke-RestMethod "$BaseUrl/productos/v1/posicionconsolidada" -Method Post -ContentType "application/json" -Headers @{ Authorization = "Bearer mock-access-token" } -Body $body
     Assert-Equal 6 $ok.cuentas.Count "cuentas"

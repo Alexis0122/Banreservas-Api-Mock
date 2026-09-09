@@ -7,4 +7,7 @@
   <ItemGroup>
     <Content Update="fixtures\\*.json" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+  </ItemGroup>
 </Project>
